@@ -1,0 +1,10 @@
+[package]
+name = "midi-stream-parser"
+version = "0.1.0"
+edition = "2021"
+authors = ["Oliver Rockstedt <info@sourcebox.de>"]
+description = "Parser to convert bytes from a MIDI stream into messages."
+repository = "https://github.com/sourcebox/midi-stream-parser-rs"
+license = "MIT"
+keywords = ["midi", "realtime"]
+categories = ["no-std", "embedded", "parsing", "multimedia::encoding"]
