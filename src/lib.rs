@@ -59,7 +59,6 @@ impl<const SYSEX_MAX_LEN: usize> MidiStreamParser<SYSEX_MAX_LEN> {
     /// Feed a byte into the parser and return result.
     /// The `Ok` variant is an option that contains either the constructed message or `None`
     /// in case the message is not ready yet.
-    #[must_use]
     pub fn parse(&mut self, byte: u8) -> Result<Option<&[u8]>, ParserError> {
         match byte {
             0x00..=0x7F => {
