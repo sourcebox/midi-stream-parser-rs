@@ -1,7 +1,7 @@
 //! Parser to convert a stream of MIDI bytes into well-formed messages.
 
 #![doc = include_str!("../README.md")]
-#![no_std]
+#![cfg_attr(not(test), no_std)]
 
 /// Parser type with internal states.
 /// Owns a buffer of `SYSEX_MAX_LEN` bytes for constructing SysEx messages.
