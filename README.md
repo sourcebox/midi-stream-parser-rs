@@ -21,7 +21,7 @@ let bytes = [0x90, 60, 127, 61, 40];
 // Feed each byte into the parser. For simplicity, errors are discarded here by using `ok()`.
 // Whenever a message is ready, it will be returned, otherwise `None`.
 for byte in bytes {
-    if let Some(message) = parser.parse(byte).ok() {
+    if let Ok(Some(message)) = parser.parse(byte) {
         println!("Message: {:?}", message);
     }
 }
