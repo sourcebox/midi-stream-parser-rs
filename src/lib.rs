@@ -1,5 +1,3 @@
-//! Parser to convert a stream of MIDI bytes into well-formed messages.
-
 #![doc = include_str!("../README.md")]
 #![cfg_attr(not(test), no_std)]
 
