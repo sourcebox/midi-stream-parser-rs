@@ -103,6 +103,12 @@ impl<const SYSEX_MAX_LEN: usize> MidiStreamParser<SYSEX_MAX_LEN> {
                         self.sysex_message[0] = byte;
                         self.sysex_message_length = 1;
                     }
+                    0xF6 => {
+                        // Tune request.
+                        self.message[0] = byte;
+                        self.message_length = 1;
+                        return Ok(Some(&self.message[0..1]));
+                    }
                     0xF7 => {
                         // End of SysEx.
                         self.sysex_running = false;

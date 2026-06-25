@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Parsing of *Tune Request* message
+
 ## [0.1.0] - 2022-12-18
 
 Initial release.
