@@ -45,8 +45,8 @@ impl MidiStreamParser {
         }
     }
 
-    /// Feed a byte into the parser and return result.
-    /// The `Ok` variant is an option that contains either the constructed message or `None`
+    /// Feeds a byte into the parser and return result.
+    /// The result is an option that contains either the message variant or `None`
     /// in case the message is not ready yet.
     pub fn feed<'a>(&'a mut self, byte: u8) -> Option<ParserOutput<'a>> {
         match byte {
