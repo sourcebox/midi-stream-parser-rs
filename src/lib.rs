@@ -2,7 +2,7 @@
 #![cfg_attr(not(test), no_std)]
 
 /// Parser type with internal states.
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct MidiStreamParser {
     /// Buffer for message to be created.
     message: [u8; 3],
@@ -25,13 +25,6 @@ pub enum ParserOutput<'a> {
 
     /// Byte of a SysEx message.
     SysexByte(u8),
-}
-
-impl Default for MidiStreamParser {
-    /// Returns a new parser with default values.
-    fn default() -> Self {
-        Self::new()
-    }
 }
 
 impl MidiStreamParser {
