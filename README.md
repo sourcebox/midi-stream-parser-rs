@@ -15,10 +15,10 @@ let mut parser = MidiStreamParser::new();
 // Read the bytes from the stream, just some demo data here.
 let bytes = [0x90, 60, 127, 61, 40];
 
-// Feed each byte into the parser. For simplicity, errors are discarded here by using `ok()`.
+// Feed each byte into the parser.
 // Whenever a message is ready, it will be returned, otherwise `None`.
 for byte in bytes {
-    if let Ok(Some(output)) = parser.parse(byte) {
+    if let Some(output) = parser.parse(byte) {
         match output {
             ParserOutput::Message(message) => {
                 // Slice containing a full message.

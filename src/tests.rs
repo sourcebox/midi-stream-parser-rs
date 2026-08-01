@@ -11,7 +11,7 @@ fn note_off() {
     let messages = [None, None, Some(ParserOutput::Message(&[0x82, 37, 10]))];
 
     for (byte, message) in bytes.iter().zip(messages.iter()) {
-        let result = parser.parse(*byte).unwrap();
+        let result = parser.parse(*byte);
         assert_eq!(result, *message);
     }
 }
@@ -31,7 +31,7 @@ fn note_off_with_realtime() {
     ];
 
     for (byte, message) in bytes.iter().zip(messages.iter()) {
-        let result = parser.parse(*byte).unwrap();
+        let result = parser.parse(*byte);
         assert_eq!(result, *message);
     }
 }
@@ -45,7 +45,7 @@ fn note_on() {
     let messages = [None, None, Some(ParserOutput::Message(&[0x94, 75, 82]))];
 
     for (byte, message) in bytes.iter().zip(messages.iter()) {
-        let result = parser.parse(*byte).unwrap();
+        let result = parser.parse(*byte);
         assert_eq!(result, *message);
     }
 }
@@ -65,7 +65,7 @@ fn note_on_running_status() {
     ];
 
     for (byte, message) in bytes.iter().zip(messages.iter()) {
-        let result = parser.parse(*byte).unwrap();
+        let result = parser.parse(*byte);
         assert_eq!(result, *message);
     }
 }
@@ -79,7 +79,7 @@ fn poly_key_pressure() {
     let messages = [None, None, Some(ParserOutput::Message(&[0xA1, 52, 80]))];
 
     for (byte, message) in bytes.iter().zip(messages.iter()) {
-        let result = parser.parse(*byte).unwrap();
+        let result = parser.parse(*byte);
         assert_eq!(result, *message);
     }
 }
@@ -93,7 +93,7 @@ fn control_change() {
     let messages = [None, None, Some(ParserOutput::Message(&[0xBC, 21, 40]))];
 
     for (byte, message) in bytes.iter().zip(messages.iter()) {
-        let result = parser.parse(*byte).unwrap();
+        let result = parser.parse(*byte);
         assert_eq!(result, *message);
     }
 }
@@ -107,7 +107,7 @@ fn program_change() {
     let messages = [None, Some(ParserOutput::Message(&[0xC5, 17]))];
 
     for (byte, message) in bytes.iter().zip(messages.iter()) {
-        let result = parser.parse(*byte).unwrap();
+        let result = parser.parse(*byte);
         assert_eq!(result, *message);
     }
 }
@@ -121,7 +121,7 @@ fn channel_pressure() {
     let messages = [None, Some(ParserOutput::Message(&[0xD7, 102]))];
 
     for (byte, message) in bytes.iter().zip(messages.iter()) {
-        let result = parser.parse(*byte).unwrap();
+        let result = parser.parse(*byte);
         assert_eq!(result, *message);
     }
 }
@@ -135,7 +135,7 @@ fn pitch_bend() {
     let messages = [None, None, Some(ParserOutput::Message(&[0xE9, 94, 112]))];
 
     for (byte, message) in bytes.iter().zip(messages.iter()) {
-        let result = parser.parse(*byte).unwrap();
+        let result = parser.parse(*byte);
         assert_eq!(result, *message);
     }
 }
@@ -149,7 +149,7 @@ fn mtc_quarter_frame() {
     let messages = [None, Some(ParserOutput::Message(&[0xF1, 54]))];
 
     for (byte, message) in bytes.iter().zip(messages.iter()) {
-        let result = parser.parse(*byte).unwrap();
+        let result = parser.parse(*byte);
         assert_eq!(result, *message);
     }
 }
@@ -163,7 +163,7 @@ fn song_position_pointer() {
     let messages = [None, None, Some(ParserOutput::Message(&[0xF2, 19, 78]))];
 
     for (byte, message) in bytes.iter().zip(messages.iter()) {
-        let result = parser.parse(*byte).unwrap();
+        let result = parser.parse(*byte);
         assert_eq!(result, *message);
     }
 }
@@ -177,7 +177,7 @@ fn song_select() {
     let messages = [None, Some(ParserOutput::Message(&[0xF3, 12]))];
 
     for (byte, message) in bytes.iter().zip(messages.iter()) {
-        let result = parser.parse(*byte).unwrap();
+        let result = parser.parse(*byte);
         assert_eq!(result, *message);
     }
 }
@@ -191,7 +191,7 @@ fn tune_request() {
     let messages = [Some(ParserOutput::Message(&[0xF6]))];
 
     for (byte, message) in bytes.iter().zip(messages.iter()) {
-        let result = parser.parse(*byte).unwrap();
+        let result = parser.parse(*byte);
         assert_eq!(result, *message);
     }
 }
@@ -212,7 +212,7 @@ fn system_realtime() {
     ];
 
     for (byte, message) in bytes.iter().zip(messages.iter()) {
-        let result = parser.parse(*byte).unwrap();
+        let result = parser.parse(*byte);
         assert_eq!(result, *message);
     }
 }
@@ -233,7 +233,7 @@ fn sysex() {
     ];
 
     for (byte, message) in bytes.iter().zip(messages.iter()) {
-        let result = parser.parse(*byte).unwrap();
+        let result = parser.parse(*byte);
         assert_eq!(result, *message);
     }
 }
@@ -255,7 +255,7 @@ fn sysex_with_realtime() {
     ];
 
     for (byte, message) in bytes.iter().zip(messages.iter()) {
-        let result = parser.parse(*byte).unwrap();
+        let result = parser.parse(*byte);
         assert_eq!(result, *message);
     }
 }

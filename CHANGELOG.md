@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 - Internal fixed size buffer for SysEx messages.
+- *BREAKING:* removed `ParserError`.
 
 ## [0.1.1] - 2026-06-25
 

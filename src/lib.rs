@@ -18,20 +18,13 @@ pub struct MidiStreamParser {
 }
 
 /// Parser output variants.
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Eq)]
 pub enum ParserOutput<'a> {
     /// Regular message.
     Message(&'a [u8]),
 
     /// Byte of a SysEx message.
     SysexByte(u8),
-}
-
-/// Error variants.
-#[derive(Debug)]
-pub enum ParserError {
-    /// No valid status byte.
-    InvalidStatus,
 }
 
 impl Default for MidiStreamParser {
@@ -55,29 +48,29 @@ impl MidiStreamParser {
     /// Feed a byte into the parser and return result.
     /// The `Ok` variant is an option that contains either the constructed message or `None`
     /// in case the message is not ready yet.
-    pub fn parse<'a>(&'a mut self, byte: u8) -> Result<Option<ParserOutput<'a>>, ParserError> {
+    pub fn parse<'a>(&'a mut self, byte: u8) -> Option<ParserOutput<'a>> {
         match byte {
             0x00..=0x7F => {
                 // Data byte
                 if self.sysex_running {
-                    return Ok(Some(ParserOutput::SysexByte(byte)));
+                    return Some(ParserOutput::SysexByte(byte));
                 } else {
                     if self.message_length == 0 {
                         // No valid status byte found.
-                        return Err(ParserError::InvalidStatus);
+                        return None;
                     }
                     self.message[self.message_length] = byte;
                     self.message_length += 1;
                     if self.message_length == 3 {
                         // 3-byte message ready, keep first byte for running status
                         self.message_length = 1;
-                        return Ok(Some(ParserOutput::Message(&self.message)));
+                        return Some(ParserOutput::Message(&self.message));
                     } else if matches!(self.message[0] & 0xF0, 0xC0 | 0xD0)
                         || matches!(self.message[0], 0xF1 | 0xF3)
                     {
                         // 2-byte message ready, keep first byte for running status
                         self.message_length = 1;
-                        return Ok(Some(ParserOutput::Message(&self.message[0..2])));
+                        return Some(ParserOutput::Message(&self.message[0..2]));
                     }
                 }
             }
@@ -94,18 +87,18 @@ impl MidiStreamParser {
                         self.message[0] = 0;
                         self.message_length = 0;
                         self.sysex_running = true;
-                        return Ok(Some(ParserOutput::SysexByte(byte)));
+                        return Some(ParserOutput::SysexByte(byte));
                     }
                     0xF6 => {
                         // Tune request.
                         self.message[0] = byte;
                         self.message_length = 1;
-                        return Ok(Some(ParserOutput::Message(&self.message[0..1])));
+                        return Some(ParserOutput::Message(&self.message[0..1]));
                     }
                     0xF7 => {
                         // End of SysEx.
                         self.sysex_running = false;
-                        return Ok(Some(ParserOutput::SysexByte(byte)));
+                        return Some(ParserOutput::SysexByte(byte));
                     }
                     _ => {
                         self.message[0] = byte;
@@ -116,11 +109,11 @@ impl MidiStreamParser {
             0xF8..=0xFF => {
                 // Status byte for system realtime message.
                 self.realtime_message[0] = byte;
-                return Ok(Some(ParserOutput::Message(&self.realtime_message)));
+                return Some(ParserOutput::Message(&self.realtime_message));
             }
         }
 
-        Ok(None)
+        None
     }
 }
 
