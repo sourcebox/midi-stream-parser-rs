@@ -1,5 +1,5 @@
 #![doc = include_str!("../README.md")]
-#![cfg_attr(not(test), no_std)]
+#![no_std]
 
 /// Parser type with internal states.
 #[derive(Debug, Default)]
