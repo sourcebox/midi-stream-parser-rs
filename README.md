@@ -2,18 +2,15 @@
 
 This `no_std` Rust crate contains a parser that takes a stream of bytes from a MIDI source (typically a serial input on an embedded device) and converts them into well-formed messages for further processing.
 
-Currently, only MIDI 1.0 messages are supported.
-
 ## Usage Example
 
 Feed the stream into the parser byte-per-byte and process the result. This is required because *System Realtime* messages can be present in-between other messages and must be processed with priority.
 
-```rust
-// Maximum length of internal SysEx buffer in bytes
-const SYSEX_MAX_LEN: usize = 256;
+```rust no_run
+use midi_stream_parser::*;
 
 // Get an instance of the parser
-let mut parser = midi_stream_parser::MidiStreamParser::<SYSEX_MAX_LEN>::new();
+let mut parser = MidiStreamParser::new();
 
 // Read the bytes from the stream, just some demo data here.
 let bytes = [0x90, 60, 127, 61, 40];
@@ -21,8 +18,17 @@ let bytes = [0x90, 60, 127, 61, 40];
 // Feed each byte into the parser. For simplicity, errors are discarded here by using `ok()`.
 // Whenever a message is ready, it will be returned, otherwise `None`.
 for byte in bytes {
-    if let Ok(Some(message)) = parser.parse(byte) {
-        println!("Message: {:?}", message);
+    if let Ok(Some(output)) = parser.parse(byte) {
+        match output {
+            ParserOutput::Message(message) => {
+                // Slice containing a full message.
+                println!("Message: {:?}", message);                
+            }
+            ParserOutput::SysexByte(byte) => {
+                // Single byte of a SysEx message.
+                println!("SysEx byte: {}", byte);
+            }
+        }
     }
 }
 ```
