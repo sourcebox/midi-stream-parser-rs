@@ -18,7 +18,7 @@ let bytes = [0x90, 60, 127, 61, 40];
 // Feed each byte into the parser.
 // Whenever a message is ready, it will be returned, otherwise `None`.
 for byte in bytes {
-    if let Some(output) = parser.parse(byte) {
+    if let Some(output) = parser.feed(byte) {
         match output {
             ParserOutput::Message(message) => {
                 // Slice containing a full message.
