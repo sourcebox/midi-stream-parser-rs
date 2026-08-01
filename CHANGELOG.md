@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - *BREAKING:* `parse` function returns a `ParserOutput` enum instead of `&[u8]`.
+- Set Rust edition to 2024.
 
 ### Removed
 
