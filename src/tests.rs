@@ -16,6 +16,26 @@ fn note_off() {
     }
 }
 
+/// Incomplete note off message followed by a note on message.
+#[test]
+fn note_off_incomplete_note_on() {
+    let mut parser = MidiStreamParser::new();
+
+    let bytes = [0x82, 37, 0x93, 14, 80];
+    let messages = [
+        None,
+        None,
+        None,
+        None,
+        Some(ParserOutput::Message(&[0x93, 14, 80])),
+    ];
+
+    for (byte, message) in bytes.iter().zip(messages.iter()) {
+        let result = parser.feed(*byte);
+        assert_eq!(result, *message);
+    }
+}
+
 /// Note off message with realtime messages in-between.
 #[test]
 fn note_off_with_realtime() {
@@ -61,6 +81,28 @@ fn note_on_running_status() {
         None,
         Some(ParserOutput::Message(&[0x90, 60, 127])),
         None,
+        Some(ParserOutput::Message(&[0x90, 61, 40])),
+    ];
+
+    for (byte, message) in bytes.iter().zip(messages.iter()) {
+        let result = parser.feed(*byte);
+        assert_eq!(result, *message);
+    }
+}
+
+/// Two note on messages sharing the same status byte
+/// with a realtime message in-between.
+#[test]
+fn note_on_running_status_with_realtime() {
+    let mut parser = MidiStreamParser::new();
+
+    let bytes = [0x90, 60, 127, 61, 0xF8, 40];
+    let messages = [
+        None,
+        None,
+        Some(ParserOutput::Message(&[0x90, 60, 127])),
+        None,
+        Some(ParserOutput::Message(&[0xF8])),
         Some(ParserOutput::Message(&[0x90, 61, 40])),
     ];
 
@@ -252,6 +294,27 @@ fn sysex_with_realtime() {
         Some(ParserOutput::SysexByte(0x7F)),
         Some(ParserOutput::SysexByte(0x30)),
         Some(ParserOutput::SysexByte(0xF7)),
+    ];
+
+    for (byte, message) in bytes.iter().zip(messages.iter()) {
+        let result = parser.feed(*byte);
+        assert_eq!(result, *message);
+    }
+}
+
+/// Incomplete SysEx message followed by a note on message.
+#[test]
+fn sysex_incomplete_note_on() {
+    let mut parser = MidiStreamParser::new();
+
+    let bytes = [0xF0, 0x10, 0x20, 0x97, 23, 98];
+    let messages = [
+        Some(ParserOutput::SysexByte(0xF0)),
+        Some(ParserOutput::SysexByte(0x10)),
+        Some(ParserOutput::SysexByte(0x20)),
+        None,
+        None,
+        Some(ParserOutput::Message(&[0x97, 23, 98])),
     ];
 
     for (byte, message) in bytes.iter().zip(messages.iter()) {
