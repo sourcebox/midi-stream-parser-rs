@@ -31,12 +31,7 @@ pub enum ParserOutput<'a> {
 impl MidiStreamParser {
     /// Returns a new parser.
     pub fn new() -> Self {
-        Self {
-            message: [0; 3],
-            message_length: 0,
-            realtime_message: [0; 1],
-            sysex_running: false,
-        }
+        Self::default()
     }
 
     /// Feeds a byte into the parser and returns an option with the output.
