@@ -71,6 +71,7 @@ impl MidiStreamParser {
                 // Status byte for channel voice message.
                 self.message[0] = byte;
                 self.message_length = 1;
+                self.sysex_running = false;
             }
             0xF0..=0xF7 => {
                 // Status byte for system common message.

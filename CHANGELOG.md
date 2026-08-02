@@ -18,6 +18,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Internal buffer for SysEx messages.
 - *BREAKING:* removed `ParserError`.
 
+### Fixed
+
+- Exit SysEx mode if interrupted by a non-realtime message.
+
 ## [0.1.1] - 2026-06-25
 
 ### Added
