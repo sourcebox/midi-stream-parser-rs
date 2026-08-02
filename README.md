@@ -16,7 +16,9 @@ let mut parser = MidiStreamParser::new();
 let bytes = [0x90, 60, 127, 61, 40];
 
 // Feed each byte into the parser.
-// Whenever a message is ready, it will be returned, otherwise `None`.
+// Whenever a message is complete, it will be returned, otherwise `None`.
+// SysEx data is returned byte-per-byte and must be either processed
+// on-the-fly or stored in an external buffer until completion.
 for byte in bytes {
     if let Some(output) = parser.feed(byte) {
         match output {

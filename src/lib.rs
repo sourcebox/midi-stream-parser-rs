@@ -1,10 +1,10 @@
 #![doc = include_str!("../README.md")]
 #![no_std]
 
-/// Parser type with internal states.
+/// A byte stream parser.
 #[derive(Debug, Default)]
 pub struct MidiStreamParser {
-    /// Buffer for message to be created.
+    /// Buffer for message.
     message: [u8; 3],
 
     /// Length of message in buffer.
@@ -17,13 +17,14 @@ pub struct MidiStreamParser {
     sysex_running: bool,
 }
 
-/// Parser output variants.
+/// Parser output returned by the `feed` function.
 #[derive(Debug, PartialEq, Eq)]
 pub enum ParserOutput<'a> {
-    /// Regular message.
+    /// Slice of a regular message with a length of 1-3 bytes
+    /// according to its type.
     Message(&'a [u8]),
 
-    /// Byte of a SysEx message.
+    /// Single byte of a SysEx message.
     SysexByte(u8),
 }
 
@@ -38,9 +39,10 @@ impl MidiStreamParser {
         }
     }
 
-    /// Feeds a byte into the parser and return result.
-    /// The result is an option that contains either the message variant or `None`
-    /// in case the message is not ready yet.
+    /// Feeds a byte into the parser and returns an option with the output.
+    ///
+    /// The option is either `Some(ParserOutput)` or `None`
+    /// in case the message is not complete yet.
     pub fn feed<'a>(&'a mut self, byte: u8) -> Option<ParserOutput<'a>> {
         match byte {
             0x00..=0x7F => {
