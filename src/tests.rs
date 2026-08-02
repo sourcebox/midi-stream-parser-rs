@@ -322,3 +322,117 @@ fn sysex_incomplete_note_on() {
         assert_eq!(result, *message);
     }
 }
+
+/// `MidiSysexMessage` without anything special.
+#[test]
+fn sysex_message() {
+    let mut sysex_message = MidiSysexMessage::<256>::new();
+
+    let bytes = [0xF0, 0x10, 0x20, 0x7F, 0x30, 0xF7];
+    let messages = [
+        None,
+        None,
+        None,
+        None,
+        None,
+        Some([0xF0, 0x10, 0x20, 0x7F, 0x30, 0xF7].as_ref()),
+    ];
+
+    for (byte, message) in bytes.iter().zip(messages.iter()) {
+        let result = sysex_message.append(*byte);
+        assert_eq!(result, *message);
+    }
+}
+
+/// `MidiSysexMessage` with 2 consecutive messages and unsound bytes in-between.
+#[test]
+fn sysex_message_consecutive_unsound() {
+    let mut sysex_message = MidiSysexMessage::<256>::new();
+
+    let bytes = [
+        0xF0, 0x10, 0x20, 0x7F, 0x30, 0xF7, 0x60, 0xF7, 0xF0, 0x11, 0x21, 0x31, 0xF7,
+    ];
+    let messages = [
+        None,
+        None,
+        None,
+        None,
+        None,
+        Some([0xF0, 0x10, 0x20, 0x7F, 0x30, 0xF7].as_ref()),
+        None,
+        None,
+        None,
+        None,
+        None,
+        None,
+        Some([0xF0, 0x11, 0x21, 0x31, 0xF7].as_ref()),
+    ];
+
+    for (byte, message) in bytes.iter().zip(messages.iter()) {
+        let result = sysex_message.append(*byte);
+        assert_eq!(result, *message);
+    }
+}
+
+/// `MidiSysexMessage` with overflow.
+#[test]
+fn sysex_message_overflow() {
+    let mut sysex_message = MidiSysexMessage::<4>::new();
+
+    let bytes = [0xF0, 0x10, 0x20, 0x7F, 0x30, 0xF7, 0xF0, 0x10, 0x20, 0xF7];
+    let messages = [
+        None,
+        None,
+        None,
+        None,
+        None,
+        None,
+        None,
+        None,
+        None,
+        Some([0xF0, 0x10, 0x20, 0xF7].as_ref()),
+    ];
+
+    for (byte, message) in bytes.iter().zip(messages.iter()) {
+        let result = sysex_message.append(*byte);
+        assert_eq!(result, *message);
+    }
+}
+
+/// `MidiSysexMessage` capacity checks.
+#[test]
+fn sysex_message_capacity() {
+    let mut sysex_message = MidiSysexMessage::<4>::new();
+
+    assert_eq!(sysex_message.capacity(), 4);
+
+    sysex_message.append(0x37);
+    assert_eq!(sysex_message.len(), 0);
+    assert_eq!(sysex_message.is_empty(), true);
+
+    sysex_message.append(0xF0);
+    assert_eq!(sysex_message.len(), 1);
+    assert_eq!(sysex_message.free_capacity(), 3);
+
+    sysex_message.append(0x10);
+    sysex_message.append(0x20);
+    assert_eq!(sysex_message.is_empty(), false);
+    assert_eq!(sysex_message.is_full(), false);
+
+    sysex_message.append(0x30);
+    assert_eq!(sysex_message.len(), 4);
+    assert_eq!(sysex_message.free_capacity(), 0);
+    assert_eq!(sysex_message.is_full(), true);
+
+    sysex_message.append(0xF7);
+    assert_eq!(sysex_message.len(), 4);
+    assert_eq!(sysex_message.free_capacity(), 0);
+    assert_eq!(sysex_message.is_full(), true);
+
+    sysex_message.clear();
+    assert_eq!(sysex_message.is_empty(), true);
+
+    sysex_message.append(0xF0);
+    assert_eq!(sysex_message.len(), 1);
+    assert_eq!(sysex_message.free_capacity(), 3);
+}

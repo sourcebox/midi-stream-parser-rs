@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - `reset` function.
+- `MidiSysexMessage` struct with owned buffer.
 - More unit tests.
 
 ### Changed
@@ -20,7 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
-- Internal buffer for SysEx messages.
+- Internal buffer for SysEx messages. Use `MidiSysexMessage` as replacement.
 - *BREAKING:* removed `ParserError`.
 
 ### Fixed
