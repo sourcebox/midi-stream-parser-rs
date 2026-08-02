@@ -106,6 +106,11 @@ impl MidiStreamParser {
 
         None
     }
+
+    /// Resets the parser to its initial state.
+    pub fn reset(&mut self) {
+        *self = Self::default();
+    }
 }
 
 #[cfg(test)]
