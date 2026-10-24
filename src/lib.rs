@@ -127,7 +127,7 @@ impl MidiStreamParser {
 }
 
 /// A MIDI SysEx message with internal buffer.
-#[derive(Debug)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct MidiSysexMessage<const CAPACITY: usize> {
     /// Buffer containing the message.
     buffer: [u8; CAPACITY],

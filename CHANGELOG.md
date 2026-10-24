@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Derive `Clone`, `PartialEq` and `Eq` for `MidiSysexMessage`.
 - More unit tests.
 
 ### Changed
