@@ -183,7 +183,7 @@ impl<const CAPACITY: usize> MidiSysexMessage<CAPACITY> {
                 Ok(None)
             }
             0x00..=0x7F | 0xF7 if !self.running => Err(MidiSysexMessageError::NoStartByte),
-            _ => Ok(None),
+            _ => Err(MidiSysexMessageError::InvalidData),
         }
     }
 
@@ -223,6 +223,9 @@ impl<const CAPACITY: usize> MidiSysexMessage<CAPACITY> {
 pub enum MidiSysexMessageError {
     /// Message has not been started with 0xF0.
     NoStartByte,
+
+    /// Invalid data byte.
+    InvalidData,
 
     /// Capacity of the message is exceeded.
     CapacityExceeded,

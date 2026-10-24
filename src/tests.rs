@@ -402,6 +402,28 @@ fn sysex_message() {
     }
 }
 
+/// `MidiSysexMessage` with an invalid data byte.
+#[test]
+fn sysex_message_invalid_data() {
+    let mut sysex_message = MidiSysexMessage::<256>::new();
+
+    let bytes = [0xF0, 0x10, 0x20, 0x80, 0x7F, 0x30, 0xF7];
+    let messages = [
+        Ok(None),
+        Ok(None),
+        Ok(None),
+        Err(MidiSysexMessageError::InvalidData),
+        Ok(None),
+        Ok(None),
+        Ok(Some([0xF0, 0x10, 0x20, 0x7F, 0x30, 0xF7].as_ref())),
+    ];
+
+    for (byte, message) in bytes.iter().zip(messages.iter()) {
+        let result = sysex_message.append(*byte);
+        assert_eq!(result, *message);
+    }
+}
+
 /// `MidiSysexMessage` with 2 consecutive messages and unsound bytes in-between.
 #[test]
 fn sysex_message_consecutive_unsound() {
