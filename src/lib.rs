@@ -10,6 +10,9 @@ pub struct MidiStreamParser {
     /// Length of message in buffer.
     message_length: usize,
 
+    /// Byte used for running status.
+    running_status: Option<u8>,
+
     /// Single byte realtime message buffer.
     realtime_message: [u8; 1],
 
@@ -46,8 +49,13 @@ impl MidiStreamParser {
                     return Some(ParserOutput::SysexByte(byte));
                 } else {
                     if self.message_length == 0 {
-                        // No valid status byte found.
-                        return None;
+                        if let Some(status) = self.running_status {
+                            self.message[0] = status;
+                            self.message_length = 1;
+                        } else {
+                            // No valid status byte found.
+                            return None;
+                        }
                     }
                     self.message[self.message_length] = byte;
                     self.message_length += 1;
@@ -68,6 +76,7 @@ impl MidiStreamParser {
                 // Status byte for channel voice message.
                 self.message[0] = byte;
                 self.message_length = 1;
+                self.running_status = Some(byte);
                 self.sysex_running = false;
             }
             0xF0..=0xF7 => {
@@ -80,16 +89,20 @@ impl MidiStreamParser {
                         self.sysex_running = true;
                         return Some(ParserOutput::SysexByte(byte));
                     }
+                    0xF4 | 0xF5 => {
+                        self.sysex_running = false;
+                    }
                     0xF6 => {
                         // Tune request.
                         self.message[0] = byte;
-                        self.message_length = 1;
+                        self.message_length = 0;
                         self.sysex_running = false;
                         return Some(ParserOutput::Message(&self.message[0..1]));
                     }
                     0xF7 => {
                         // End of SysEx.
                         self.sysex_running = false;
+                        self.running_status = None;
                         return Some(ParserOutput::SysexByte(byte));
                     }
                     _ => {

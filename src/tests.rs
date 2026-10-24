@@ -112,6 +112,50 @@ fn note_on_running_status_with_realtime() {
     }
 }
 
+/// Two note on messages sharing the same status byte
+/// with a tune request message in-between.
+#[test]
+fn note_on_running_status_with_tune_request() {
+    let mut parser = MidiStreamParser::new();
+
+    let bytes = [0x90, 60, 127, 0xF6, 61, 40];
+    let messages = [
+        None,
+        None,
+        Some(ParserOutput::Message(&[0x90, 60, 127])),
+        Some(ParserOutput::Message(&[0xF6])),
+        None,
+        Some(ParserOutput::Message(&[0x90, 61, 40])),
+    ];
+
+    for (byte, message) in bytes.iter().zip(messages.iter()) {
+        let result = parser.feed(*byte);
+        assert_eq!(result, *message);
+    }
+}
+
+/// Two note on messages sharing the same status byte
+/// with an invalid message in-between.
+#[test]
+fn note_on_running_status_with_invalid() {
+    let mut parser = MidiStreamParser::new();
+
+    let bytes = [0x90, 60, 127, 0xF4, 61, 40];
+    let messages = [
+        None,
+        None,
+        Some(ParserOutput::Message(&[0x90, 60, 127])),
+        None,
+        None,
+        Some(ParserOutput::Message(&[0x90, 61, 40])),
+    ];
+
+    for (byte, message) in bytes.iter().zip(messages.iter()) {
+        let result = parser.feed(*byte);
+        assert_eq!(result, *message);
+    }
+}
+
 /// Poly key pressure message.
 #[test]
 fn poly_key_pressure() {
