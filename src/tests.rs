@@ -224,6 +224,20 @@ fn song_select() {
     }
 }
 
+/// Undefined messages.
+#[test]
+fn undefined() {
+    let mut parser = MidiStreamParser::new();
+
+    let bytes = [0xF4, 0xF5];
+    let messages = [None, None];
+
+    for (byte, message) in bytes.iter().zip(messages.iter()) {
+        let result = parser.feed(*byte);
+        assert_eq!(result, *message);
+    }
+}
+
 /// Tune request message.
 #[test]
 fn tune_request() {
