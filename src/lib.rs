@@ -49,11 +49,9 @@ impl MidiStreamParser {
                     return Some(ParserOutput::SysexByte(byte));
                 } else {
                     if self.message_length == 0 {
-                        {
-                            let status = self.running_status?;
-                            self.message[0] = status;
-                            self.message_length = 1;
-                        }
+                        let status = self.running_status?;
+                        self.message[0] = status;
+                        self.message_length = 1;
                     }
                     self.message[self.message_length] = byte;
                     self.message_length += 1;
