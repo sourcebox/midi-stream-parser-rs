@@ -220,6 +220,7 @@ impl<const CAPACITY: usize> MidiSysexMessage<CAPACITY> {
 
 /// Errors for `MidiSysexMessage`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[non_exhaustive]
 pub enum MidiSysexMessageError {
     /// Message has not been started with 0xF0.
     NoStartByte,
