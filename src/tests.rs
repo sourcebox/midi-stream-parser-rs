@@ -388,12 +388,12 @@ fn sysex_message() {
 
     let bytes = [0xF0, 0x10, 0x20, 0x7F, 0x30, 0xF7];
     let messages = [
-        None,
-        None,
-        None,
-        None,
-        None,
-        Some([0xF0, 0x10, 0x20, 0x7F, 0x30, 0xF7].as_ref()),
+        Ok(None),
+        Ok(None),
+        Ok(None),
+        Ok(None),
+        Ok(None),
+        Ok(Some([0xF0, 0x10, 0x20, 0x7F, 0x30, 0xF7].as_ref())),
     ];
 
     for (byte, message) in bytes.iter().zip(messages.iter()) {
@@ -411,19 +411,19 @@ fn sysex_message_consecutive_unsound() {
         0xF0, 0x10, 0x20, 0x7F, 0x30, 0xF7, 0x60, 0xF7, 0xF0, 0x11, 0x21, 0x31, 0xF7,
     ];
     let messages = [
-        None,
-        None,
-        None,
-        None,
-        None,
-        Some([0xF0, 0x10, 0x20, 0x7F, 0x30, 0xF7].as_ref()),
-        None,
-        None,
-        None,
-        None,
-        None,
-        None,
-        Some([0xF0, 0x11, 0x21, 0x31, 0xF7].as_ref()),
+        Ok(None),
+        Ok(None),
+        Ok(None),
+        Ok(None),
+        Ok(None),
+        Ok(Some([0xF0, 0x10, 0x20, 0x7F, 0x30, 0xF7].as_ref())),
+        Err(MidiSysexMessageError::NoStartByte),
+        Err(MidiSysexMessageError::NoStartByte),
+        Ok(None),
+        Ok(None),
+        Ok(None),
+        Ok(None),
+        Ok(Some([0xF0, 0x11, 0x21, 0x31, 0xF7].as_ref())),
     ];
 
     for (byte, message) in bytes.iter().zip(messages.iter()) {
@@ -439,16 +439,16 @@ fn sysex_message_overflow() {
 
     let bytes = [0xF0, 0x10, 0x20, 0x7F, 0x30, 0xF7, 0xF0, 0x10, 0x20, 0xF7];
     let messages = [
-        None,
-        None,
-        None,
-        None,
-        None,
-        None,
-        None,
-        None,
-        None,
-        Some([0xF0, 0x10, 0x20, 0xF7].as_ref()),
+        Ok(None),
+        Ok(None),
+        Ok(None),
+        Ok(None),
+        Err(MidiSysexMessageError::CapacityExceeded),
+        Err(MidiSysexMessageError::CapacityExceeded),
+        Err(MidiSysexMessageError::CapacityExceeded),
+        Err(MidiSysexMessageError::CapacityExceeded),
+        Err(MidiSysexMessageError::CapacityExceeded),
+        Err(MidiSysexMessageError::CapacityExceeded),
     ];
 
     for (byte, message) in bytes.iter().zip(messages.iter()) {
@@ -464,25 +464,25 @@ fn sysex_message_capacity() {
 
     assert_eq!(sysex_message.capacity(), 4);
 
-    sysex_message.append(0x37);
+    let _ = sysex_message.append(0x37);
     assert_eq!(sysex_message.len(), 0);
     assert_eq!(sysex_message.is_empty(), true);
 
-    sysex_message.append(0xF0);
+    let _ = sysex_message.append(0xF0);
     assert_eq!(sysex_message.len(), 1);
     assert_eq!(sysex_message.free_capacity(), 3);
 
-    sysex_message.append(0x10);
-    sysex_message.append(0x20);
+    let _ = sysex_message.append(0x10);
+    let _ = sysex_message.append(0x20);
     assert_eq!(sysex_message.is_empty(), false);
     assert_eq!(sysex_message.is_full(), false);
 
-    sysex_message.append(0x30);
+    let _ = sysex_message.append(0x30);
     assert_eq!(sysex_message.len(), 4);
     assert_eq!(sysex_message.free_capacity(), 0);
     assert_eq!(sysex_message.is_full(), true);
 
-    sysex_message.append(0xF7);
+    let _ = sysex_message.append(0xF7);
     assert_eq!(sysex_message.len(), 4);
     assert_eq!(sysex_message.free_capacity(), 0);
     assert_eq!(sysex_message.is_full(), true);
@@ -490,7 +490,7 @@ fn sysex_message_capacity() {
     sysex_message.clear();
     assert_eq!(sysex_message.is_empty(), true);
 
-    sysex_message.append(0xF0);
+    let _ = sysex_message.append(0xF0);
     assert_eq!(sysex_message.len(), 1);
     assert_eq!(sysex_message.free_capacity(), 3);
 }

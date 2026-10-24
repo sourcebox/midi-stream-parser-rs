@@ -160,29 +160,34 @@ impl<const CAPACITY: usize> MidiSysexMessage<CAPACITY> {
 
     /// Appends a byte to the buffer and returns an option
     /// with a `Some(&[u8])` when the message is complete.
-    pub fn append(&mut self, byte: u8) -> Option<&[u8]> {
+    pub fn append(&mut self, byte: u8) -> Result<Option<&[u8]>, MidiSysexMessageError> {
+        if self.length >= CAPACITY {
+            return Err(MidiSysexMessageError::CapacityExceeded);
+        }
+
         match byte {
             0xF0 => {
                 // Start of message.
                 self.buffer[0] = byte;
                 self.length = 1;
                 self.running = true;
-                None
+                Ok(None)
             }
-            0xF7 if self.running && self.length < CAPACITY => {
+            0xF7 if self.running => {
                 // End of message.
                 self.buffer[self.length] = byte;
                 self.length += 1;
                 self.running = false;
-                Some(&self.buffer[..self.length])
+                Ok(Some(&self.buffer[..self.length]))
             }
-            0x00..=0x7F if self.running && self.length < CAPACITY => {
+            0x00..=0x7F if self.running => {
                 // Data byte.
                 self.buffer[self.length] = byte;
                 self.length += 1;
-                None
+                Ok(None)
             }
-            _ => None,
+            0x00..=0x7F | 0xF7 if !self.running => Err(MidiSysexMessageError::NoStartByte),
+            _ => Ok(None),
         }
     }
 
@@ -215,6 +220,16 @@ impl<const CAPACITY: usize> MidiSysexMessage<CAPACITY> {
     pub fn is_full(&self) -> bool {
         self.length == CAPACITY
     }
+}
+
+/// Errors for `MidiSysexMessage`.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum MidiSysexMessageError {
+    /// Message has not been started with 0xF0.
+    NoStartByte,
+
+    /// Capacity of the message is exceeded.
+    CapacityExceeded,
 }
 
 #[cfg(test)]

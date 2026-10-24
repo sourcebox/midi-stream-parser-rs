@@ -40,7 +40,7 @@ for byte in bytes {
                 // Single byte of a SysEx message.
                 // Here, the byte is appended to a buffered message,
                 // but it can also be processed on-the-fly otherwise.
-                if let Some(message) = sysex_message.append(byte) {
+                if let Ok(Some(message)) = sysex_message.append(byte) {
                     // SysEx message is now complete.
                     println!("SysEx message complete: {:?}", message);
                 }
