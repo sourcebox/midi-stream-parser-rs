@@ -84,6 +84,7 @@ impl MidiStreamParser {
                         // Tune request.
                         self.message[0] = byte;
                         self.message_length = 1;
+                        self.sysex_running = false;
                         return Some(ParserOutput::Message(&self.message[0..1]));
                     }
                     0xF7 => {
@@ -94,6 +95,7 @@ impl MidiStreamParser {
                     _ => {
                         self.message[0] = byte;
                         self.message_length = 1;
+                        self.sysex_running = false;
                     }
                 }
             }
